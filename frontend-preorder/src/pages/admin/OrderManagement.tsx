@@ -59,7 +59,11 @@ const STATUS_OPTIONS: Array<{ value: Order['status']; label: string }> = [
   { value: 'DIBATALKAN', label: 'Dibatalkan' },
 ];
 
-const formatCurrency = (value: number) => `Rp ${Number(value || 0).toLocaleString('id-ID')}`;
+// PERBAIKAN BUG NaN: Dibuat kebal terhadap nilai kosong atau bukan angka
+const formatCurrency = (value: any) => {
+  const safeNum = Number(value);
+  return `Rp ${isNaN(safeNum) ? 0 : safeNum.toLocaleString('id-ID')}`;
+};
 
 const fullImageUrl = (imageUrl: string | null) => {
   if (!imageUrl) return '';
@@ -242,6 +246,29 @@ const OrderManagement = () => {
     });
   };
 
+  // LOGIKA BARU: Pesan WA Otomatis Sesuai Status Pesanan
+  const handleAutoWhatsApp = (order: Order) => {
+    const dpVal = Number(order.dpAmount) || Number(order.totalAmount) / 2;
+    let message = `Halo Kak ${order.customerName}, ini admin dari *Hi Pud*.\n\nMengenai pesanan dengan Invoice: *${order.invoiceNumber}*\n\n`;
+
+    if (order.status === 'PENDING' && !order.proofImage) {
+      message += `Kami melihat kakak belum menyelesaikan pembayaran DP sebesar *${formatCurrency(dpVal)}*. Silakan lakukan pembayaran agar pesanannya bisa segera kami proses ya Kak! Terima kasih. 🙏`;
+    } else if (order.status === 'PENDING' && order.proofImage) {
+      message += `Terima kasih ya Kak, bukti pembayaran DP-nya sudah kami terima dan sedang diverifikasi. Mohon ditunggu update selanjutnya! 😊`;
+    } else if (order.status === 'DIPROSES') {
+      message += `Pesanan Kakak sudah kami verifikasi dan saat ini sedang *DIPROSES*. Pesanan akan siap pada tanggal ${order.pickupDate ? new Date(order.pickupDate).toLocaleDateString('id-ID') : 'yang disepakati'}. Kami tunggu kedatangannya ya Kak! 💖`;
+    } else if (order.status === 'SELESAI') {
+      message += `Terima kasih sudah berbelanja di Hi Pud! Semoga suka dengan mochinya ya Kak. Ditunggu orderan selanjutnya! ✨`;
+    } else {
+      message += `Ada yang bisa kami bantu terkait pesanan Kakak?`;
+    }
+
+    const cleanNumber = order.whatsappNumber.replace(/[^0-9]/g, '');
+    const waNumber = cleanNumber.startsWith('0') ? `62${cleanNumber.substring(1)}` : cleanNumber;
+    
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
   return (
     <div className="space-y-6">
       <section className="admin-soft-panel reveal-up p-5 sm:p-6">
@@ -389,14 +416,16 @@ const OrderManagement = () => {
                 <div className="rounded-[22px] border border-[#f2d6e2]/70 bg-white/58 p-4">
                   <p className="text-xs font-black uppercase text-[#8a7c82]">Pelanggan</p>
                   <p className="mt-2 font-black text-[#3f2e35]">{selectedOrder.customerName}</p>
-                  <a
-                    href={`https://wa.me/${selectedOrder.whatsappNumber.startsWith('0') ? `62${selectedOrder.whatsappNumber.substring(1)}` : selectedOrder.whatsappNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#b9e5c9]/70 px-3 py-2 text-xs font-black text-[#37684a]"
+                  
+                  {/* --- TOMBOL WHATSAPP (Sama Persis UI-nya, Tapi Ditambah Otomasi Pesan) --- */}
+                  <button
+                    onClick={() => handleAutoWhatsApp(selectedOrder)}
+                    className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-[#b9e5c9]/70 px-3 py-2 text-xs font-black text-[#37684a] transition hover:bg-[#a6d8ba]"
                   >
                     <Phone size={14} /> {selectedOrder.whatsappNumber}
-                  </a>
+                  </button>
+                  {/* ----------------------------------------------------------------------- */}
+                  
                 </div>
                 <div className="rounded-[22px] border border-[#f2d6e2]/70 bg-white/58 p-4">
                   <p className="text-xs font-black uppercase text-[#8a7c82]">Metode</p>
