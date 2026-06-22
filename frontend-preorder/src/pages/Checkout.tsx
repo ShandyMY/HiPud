@@ -1,6 +1,6 @@
 import { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Minus, Plus, Receipt, ShoppingBag, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Minus, Plus, Receipt, ShoppingBag, Trash2, MessageCircle } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from '../api/axios';
 import { CartContext } from '../context/CartContext';
@@ -150,6 +150,20 @@ const Checkout = () => {
         <div className="flex justify-between text-sm"><span>Sisa Pembayaran</span><b>Rp {remainingAmount.toLocaleString('id-ID')}</b></div>
       </div>
       <button onClick={() => setShowReceipt(true)} className="hipud-btn mt-5 w-full py-4 font-black">Preview Kwitansi</button>
+
+      {/* --- TAMBAHAN REVISI: TOMBOL TANYA WA --- */}
+      <button 
+        type="button" 
+        onClick={() => {
+          const adminWA = '628123456789'; // Ganti dengan nomor WhatsApp UMKM Anda (tambahkan 62 di depan)
+          const message = 'Halo Admin Hi Pud, saya mau tanya-tanya dulu seputar pesanan di keranjang saya nih.';
+          window.open(`https://wa.me/${adminWA}?text=${encodeURIComponent(message)}`, '_blank');
+        }}
+        className="hipud-outline-btn mt-3 flex w-full items-center justify-center gap-2 py-4 font-black text-[#6d5963]"
+      >
+        <MessageCircle size={18} className="text-[#f48fb1]" /> Tanya Admin via WA
+      </button>
+      {/* ---------------------------------------- */}
     </div>
   );
 

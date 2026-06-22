@@ -10,6 +10,7 @@ const ReviewForm = ({ defaultProductId }: ReviewFormProps) => {
   const [products, setProducts] = useState<ProductOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    invoiceNumber: '', // <-- Tambahan state
     customerName: '',
     isAnonymous: false,
     productId: defaultProductId ? String(defaultProductId) : '',
@@ -36,14 +37,17 @@ const ReviewForm = ({ defaultProductId }: ReviewFormProps) => {
     try {
       setLoading(true);
       const response = await api.post('/reviews', {
-        customerName: formData.isAnonymous ? 'Anonymous' : formData.customerName,
+        invoiceNumber: formData.invoiceNumber, // <-- Tambahan payload API
+        productId: Number(formData.productId),
+        customerName: formData.customerName,
         isAnonymous: formData.isAnonymous,
-        productId: formData.productId ? Number(formData.productId) : null,
         rating: formData.rating,
-        comment: formData.comment,
+        comment: formData.comment
       });
       Swal.fire({ icon: 'success', title: 'Terima kasih!', text: response.data.message || 'Ulasanmu akan ditinjau admin sebelum ditampilkan.' });
-      setFormData({ customerName: '', isAnonymous: false, productId: defaultProductId ? String(defaultProductId) : '', rating: 5, comment: '' });
+      
+      // Kosongkan form setelah berhasil
+      setFormData({ invoiceNumber: '', customerName: '', isAnonymous: false, productId: defaultProductId ? String(defaultProductId) : '', rating: 5, comment: '' });
     } catch (error: any) {
       Swal.fire({ icon: 'error', title: 'Gagal mengirim', text: error.response?.data?.message || 'Coba lagi beberapa saat lagi.' });
     } finally {
@@ -54,6 +58,22 @@ const ReviewForm = ({ defaultProductId }: ReviewFormProps) => {
   return (
     <div className="glass-card mx-auto rounded-[2rem] p-6 text-left md:p-8">
       <form onSubmit={handleSubmit} className="space-y-5">
+        
+        {/* --- TAMBAHAN KOTAK INVOICE (Desain mengikuti aslinya) --- */}
+        <div>
+          <label className="hipud-label">Nomor Invoice *</label>
+          <input 
+            type="text" 
+            required 
+            placeholder="Contoh: INV-001" 
+            className="hipud-input mt-2" 
+            value={formData.invoiceNumber} 
+            onChange={(e) => setFormData({ ...formData, invoiceNumber: e.target.value })} 
+          />
+          <p className="mt-1 text-xs text-[#8a7c82]">Anda hanya bisa mengulas produk yang sudah selesai dipesan.</p>
+        </div>
+        {/* -------------------------------------------------------- */}
+
         <div className="grid gap-5 md:grid-cols-2">
           <div>
             <label className="hipud-label">Nama</label>
