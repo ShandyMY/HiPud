@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Eye, EyeOff, Star, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Star } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from '../../api/axios';
 
@@ -99,26 +99,7 @@ const ReviewManagement = () => {
     }
   };
 
-  const deleteReview = async (id: number) => {
-    const result = await Swal.fire({
-      title: 'Hapus ulasan?',
-      text: 'Ulasan akan dihapus permanen.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Ya, hapus',
-      cancelButtonText: 'Batal',
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-      await api.delete(`/reviews/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-      fetchReviews();
-      Swal.fire({ icon: 'success', title: 'Ulasan dihapus', timer: 1200, showConfirmButton: false });
-    } catch {
-      Swal.fire({ icon: 'error', title: 'Gagal menghapus' });
-    }
-  };
+  // CATATAN REVISI: Fungsi deleteReview dan konfirmasi Swal-nya sudah dihilangkan sepenuhnya
 
   const renderStars = (rating: number) => (
     <div className="flex gap-1" aria-label={`${rating} dari 5 bintang`}>
@@ -207,9 +188,7 @@ const ReviewManagement = () => {
                     <EyeOff size={16} /> Sembunyikan
                   </button>
                 )}
-                <button onClick={() => deleteReview(review.id)} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#f7a8a8]/55 px-4 py-2.5 text-sm font-black text-[#9c3d45]">
-                  <Trash2 size={16} /> Hapus
-                </button>
+                {/* CATATAN REVISI: Tombol hapus sudah dicabut dari sini */}
               </div>
             </article>
           ))
