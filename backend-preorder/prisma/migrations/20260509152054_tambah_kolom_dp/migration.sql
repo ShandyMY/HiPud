@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `order` ADD COLUMN `dpAmount` DOUBLE NOT NULL DEFAULT 0;

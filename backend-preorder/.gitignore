@@ -1,0 +1,15 @@
+# Modul dan file hasil build (Jangan diunggah karena sangat besar)
+node_modules/
+dist/
+
+# File rahasia (SANGAT PENTING UNTUK TIDAK DIUNGGAH)
+.env
+
+# File konfigurasi OS yang tidak perlu
+.DS_Store
+
+# Abaikan semua foto di folder uploads
+uploads/*
+
+# TAPI jangan abaikan file .gitkeep ini!
+!uploads/.gitkeep

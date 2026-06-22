@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Build outputs
+dist/
+**/dist/
+dist-ssr/
+
+# Logs
+logs/
+*.log
+*.err
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Runtime uploads and local generated files
+backend-preorder/uploads/*
+!backend-preorder/uploads/.gitkeep
+
+# Editor / OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

@@ -1,0 +1,98 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String      @db.Text
+  price       Float
+  imageUrl    String?
+
+  // Field lama dibuat opsional supaya produk bisa menjadi katalog menu tanpa wajib tanggal PO.
+  poOpenDate  DateTime?
+  poCloseDate DateTime?
+
+  // Field baru untuk branding Hi Pud.
+  category    String?     @default("Mochi Daifuku")
+  variant     String?
+  isActive    Boolean     @default(true) // tampil di daftar menu
+  isOrderable Boolean     @default(true) // bisa masuk keranjang / menu PO aktif
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
+  orderItems  OrderItem[]
+  reviews     Review[]
+}
+
+model Order {
+  id             Int         @id @default(autoincrement())
+  invoiceNumber  String      @unique
+  customerName   String
+  whatsappNumber String
+  address        String      @db.Text
+
+  // Field baru untuk pilihan pickup/danus.
+  pickupMethod   String?     @default("pribadi")
+  pickupDate     DateTime?
+  pickupTime     String?
+  pickupLocation String?     @db.Text
+  faculty        String?
+  notes          String?     @db.Text
+
+  totalAmount    Float
+  dpAmount       Float       @default(0)
+  status         String      @default("PENDING")
+  proofImage     String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @default(now()) @updatedAt
+  items          OrderItem[]
+  payments       Payment[]
+}
+
+model OrderItem {
+  id        Int   @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Float @default(0)
+  subtotal  Float
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  orderId       Int
+  proofImageUrl String
+  paymentStatus String   @default("Menunggu Validasi")
+  uploadedAt    DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  productId    Int?
+  customerName String
+  isAnonymous  Boolean  @default(false)
+  rating       Int
+  comment      String   @db.Text
+  isPublished  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  product Product? @relation(fields: [productId], references: [id])
+}
