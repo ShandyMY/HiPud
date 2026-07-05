@@ -1,0 +1,6 @@
+RewriteEngine On
+# Mengalihkan semua traffic dari backend-preorder ke folder dist milik frontend
+RewriteRule ^$ ../frontend-preorder/dist/ [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ ../frontend-preorder/dist/$1 [L]
