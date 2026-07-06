@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +22,8 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
     "node-cron": "^4.2.1",
-    "pdfkit": "^0.18.0"
+    "pdfkit": "^0.18.0",
+    "typescript": "^5.6.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -35,7 +37,6 @@
     "nodemon": "^3.1.14",
     "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
-    "typescript": "^5.6.0"
+    "tsx": "^4.21.0"
   }
 }
